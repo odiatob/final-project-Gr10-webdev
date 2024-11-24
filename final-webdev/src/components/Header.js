@@ -1,13 +1,14 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
   return (
     <header style={styles.header}>
       <h1 style={styles.title}>DLSL Enrollment System</h1>
       <nav style={styles.nav}>
-        <button style={styles.button} onClick={() => alert('Home clicked')}>Home</button>
-        <button style={styles.button} onClick={() => alert('List of Students clicked')}>List of Students</button>
-        <button style={styles.button} onClick={() => alert('About Us clicked')}>About Us</button>
+        <Link to="/" style={styles.button}>Home</Link>
+        <Link to="/students" style={styles.button}>List of Students</Link>
+        <Link to="/about" style={styles.button}>About Us</Link>
       </nav>
     </header>
   );
@@ -15,27 +16,38 @@ const Header = () => {
 
 const styles = {
   header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '10px 20px',
-    backgroundColor: '#4CAF50',
+    background: 'linear-gradient(135deg, #4CAF50, #388E3C)', // Gradient background
     color: 'white',
+    padding: '15px 20px',
+    textAlign: 'center',
+    borderRadius: '8px',
+    marginBottom: '20px',
   },
   title: {
-    margin: 0,
+    fontFamily: '"Montserrat", sans-serif',
+    fontSize: '28px',  // Reduced size for a simpler header
+    fontWeight: '600',
+    margin: '0',
   },
   nav: {
+    marginTop: '10px',
     display: 'flex',
-    gap: '10px',
+    justifyContent: 'center',
+    gap: '15px',
   },
   button: {
-    backgroundColor: '#fff',
-    color: '#4CAF50',
-    border: 'none',
+    textDecoration: 'none',
+    fontSize: '16px',
+    color: 'white',
     padding: '8px 16px',
-    cursor: 'pointer',
-    borderRadius: '4px',
+    backgroundColor: '#388E3C',
+    borderRadius: '5px',
+    textTransform: 'uppercase',
+    fontWeight: '500',
+    transition: 'background-color 0.3s ease',
+  },
+  buttonHover: {
+    backgroundColor: '#4CAF50', // Lighter green on hover
   },
 };
 

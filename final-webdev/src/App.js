@@ -1,12 +1,19 @@
 import React from 'react';
-import Header from './components/Header';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Header from './components/Header'; // Add this line
+import Home from './components/Home'; // Adjust path if needed
+import EnrollmentForm from './components/EnrollmentForm'; // Adjust path if needed
 
-const App = () => {
+function App() {
   return (
-    <div>
-      <Header />
-    </div>
+    <Router>
+      <Header /> {/* Include Header here */}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/enroll" element={<EnrollmentForm />} />
+      </Routes>
+    </Router>
   );
-};
+}
 
 export default App;
