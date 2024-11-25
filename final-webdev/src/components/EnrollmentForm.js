@@ -4,9 +4,10 @@ const EnrollmentForm = () => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    course: '',
+    course: '', // Default to an empty string to ensure validation works
     email: '',
-    paymentType: 'Gcash', // Default value for Type of Payment
+    paymentType: 'Gcash', // Default value
+    paymentAmount: '', // User input for payment amount
   });
 
   const handleChange = (e) => {
@@ -19,10 +20,33 @@ const EnrollmentForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Check if all fields are filled
+    const { firstName, lastName, course, email, paymentAmount } = formData;
+    if (!firstName || !lastName || !course || !email || !paymentAmount) {
+      alert('All fields are required. Please complete the form.');
+      return;
+    }
+
+    // Validate email format
+    if (!email.includes('@') || !email.includes('.')) {
+      alert('Invalid email address. Please include "@" and "." in your email.');
+      return;
+    }
+
+    // Check payment amount is valid (>= 7000)
+    if (Number(paymentAmount) < 7000) {
+      alert('Payment amount must be at least 7000 pesos.');
+      return;
+    }
+
+    // Successful submission
     alert(
-      `Enrollment submitted for ${formData.firstName} ${formData.lastName} using payment type: ${formData.paymentType}`
+      `Enrollment submitted for ${firstName} ${lastName}, Course: ${course}, Payment Type: ${formData.paymentType}, Amount: ${paymentAmount}`
     );
-    // You can add form submission logic here, such as an API call
+
+    // Redirect to GCash
+    window.open('https://gcash.com', '_blank');
   };
 
   return (
@@ -53,16 +77,21 @@ const EnrollmentForm = () => {
           />
         </div>
 
+        {/* Updated Course Section as a Select */}
         <div style={styles.inputGroup}>
           <label style={styles.label} htmlFor="course">Course:</label>
-          <input
-            type="text"
+          <select
             id="course"
             name="course"
             value={formData.course}
             onChange={handleChange}
-            style={styles.input}
-          />
+            style={styles.select}
+          >
+            <option value="">-- Select a Course --</option>
+            <option value="BS Computer Science">BS Computer Science</option>
+            <option value="BS Information Technology">BS Information Technology</option>
+            <option value="BS Entertainment Multimedia Computing">BS Entertainment Multimedia Computing</option>
+          </select>
         </div>
 
         <div style={styles.inputGroup}>
@@ -89,6 +118,20 @@ const EnrollmentForm = () => {
           >
             <option value="Gcash">Gcash</option>
           </select>
+        </div>
+
+        {/* Input Section for Payment Amount */}
+        <div style={styles.inputGroup}>
+          <label style={styles.label} htmlFor="paymentAmount">Amount of Payment:</label>
+          <input
+            type="number"
+            id="paymentAmount"
+            name="paymentAmount"
+            value={formData.paymentAmount}
+            onChange={handleChange}
+            style={styles.input}
+            placeholder="Enter amount (minimum 7000)"
+          />
         </div>
 
         <button type="submit" style={styles.submitButton}>Submit Enrollment</button>

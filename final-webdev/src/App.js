@@ -1,19 +1,40 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Header from './components/Header'; // Add this line
-import Home from './components/Home'; // Adjust path if needed
-import EnrollmentForm from './components/EnrollmentForm'; // Adjust path if needed
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './components/Home';
+import Header from './components/Header';
+import EnrollmentForm from './components/EnrollmentForm';
+import Footer from './components/Footer';
 
-function App() {
+const App = () => {
   return (
     <Router>
-      <Header /> {/* Include Header here */}
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/enroll" element={<EnrollmentForm />} />
-      </Routes>
+      <div style={styles.appContainer}>
+        {/* Header */}
+        <Header />
+        {/* Main Content */}
+        <div style={styles.content}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/enroll" element={<EnrollmentForm />} />
+          </Routes>
+        </div>
+        {/* Footer */}
+        <Footer />
+      </div>
     </Router>
   );
-}
+};
+
+const styles = {
+  appContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: '100vh',
+  },
+  content: {
+    flex: 1, // Ensures content takes up available space
+    padding: '20px',
+  },
+};
 
 export default App;
