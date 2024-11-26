@@ -4,6 +4,7 @@ import Home from './components/Home';
 import Header from './components/Header';
 import EnrollmentForm from './components/EnrollmentForm';
 import Footer from './components/Footer';
+import Login from './components/Login'
 
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/enroll" element={<EnrollmentForm />} />
+            <Route path="/login" element={<Login/>} />
           </Routes>
         </div>
         {/* Footer */}
