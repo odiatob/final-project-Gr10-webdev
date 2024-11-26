@@ -1,24 +1,23 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './components/Home';
 import Header from './components/Header';
+import Home from './components/Home';
 import EnrollmentForm from './components/EnrollmentForm';
 import Footer from './components/Footer';
+import Login from './components/Login';
+import Admin from './components/Admin';
 
 const App = () => {
   return (
     <Router>
       <div style={styles.appContainer}>
-        {/* Header */}
         <Header />
-        {/* Main Content */}
-        <div style={styles.content}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/enroll" element={<EnrollmentForm />} />
-          </Routes>
-        </div>
-        {/* Footer */}
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/enroll" element={<EnrollmentForm />} />
+          <Route path="/admin" element={<Admin />} />
+        </Routes>
         <Footer />
       </div>
     </Router>
@@ -30,10 +29,6 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     minHeight: '100vh',
-  },
-  content: {
-    flex: 1, // Ensures content takes up available space
-    padding: '20px',
   },
 };
 
