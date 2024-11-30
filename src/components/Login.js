@@ -1,50 +1,66 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
+const Login = ({ setParentEmail }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState(''); // Track the selected role (Student or Parent)
-  const [error, setError] = useState('');
-  const navigate = useNavigate(); // React Router hook for programmatic navigation
+  const [role, setRole] = useState('');
+  const [errors, setErrors] = useState([]); // Track multiple errors
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const newErrors = []; // Reset errors on each submit
 
-    // Basic validation
-    if (!username || !password || !role) {
-      setError('Please fill in all fields and select a role');
+    // Regex for validating emails
+    const studentRegex = /^[a-z0-9._%+-]+@dlsl\.edu\.ph$/; // Student email regex
+    const parentRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|yahoo\.com|dlsl\.edu\.ph)$/; // Parent email regex (Gmail/Yahoo/dlsl.edu.ph)
+
+    // Email Validation
+    if (!username) {
+      newErrors.push('Please input your email.');
+    } else {
+      if (role === 'Student') {
+        if (!studentRegex.test(username)) {
+          if (!username.includes('@dlsl.edu.ph')) {
+            newErrors.push('Please use the @dlsl.edu.ph format if you\'re a student.');
+          } else if (/[A-Z]/.test(username)) {
+            newErrors.push('Please only use small caps in inputting your email.');
+          }
+        }
+      } else if (role === 'Parent') {
+        if (!parentRegex.test(username)) {
+          newErrors.push('Please use a valid Gmail, Yahoo, or DLSL email address.');
+        }
+      }
+    }
+
+    // Password Validation
+    if (!password) {
+      newErrors.push('Please fill in your password.');
+    }
+
+    // Role Validation
+    if (!role) {
+      newErrors.push('Please select a role.');
+    }
+
+    // If there are errors, set them and stop submission
+    if (newErrors.length > 0) {
+      setErrors(newErrors);
       return;
     }
 
-    // Validation for Student emails
-    if (role === 'Student') {
-      const studentRegex = /^[a-z0-9._%+-]+@dlsl\.edu\.ph$/;
-      if (!studentRegex.test(username)) {
-        setError('Invalid email format for Student. Use a valid @dlsl.edu.ph email in lowercase.');
-        return;
-      }
-    }
-
-    // Validation for Parent emails
-    if (role === 'Parent') {
-      const parentRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // General email validation
-      if (!parentRegex.test(username)) {
-        setError('Invalid email format for Parent. Use a valid email address.');
-        return;
-      }
-    }
-
-    // Simulate authentication (for demo purposes)
-    if (username === 'user' && password === 'password123') {
-      // Redirect to different pages based on the role (this can be expanded based on your routing logic)
-      if (role === 'Student') {
-        navigate('/student-dashboard');
-      } else if (role === 'Parent') {
-        navigate('/parent-dashboard');
-      }
+    // Authentication Logic (Fix)
+    if (role === 'Student' && studentRegex.test(username)) {
+      // Assume valid credentials for demo purposes
+      navigate('/student-dashboard');
+    } else if (role === 'Parent' && parentRegex.test(username)) {
+      // After successful login, set the parent email in App.js
+      setParentEmail(username); // This will update the parent email state in App.js
+      navigate('/parent-dashboard');
     } else {
-      setError('Invalid username or password');
+      setErrors(['Invalid username or password.']);
     }
   };
 
@@ -83,7 +99,13 @@ const Login = () => {
             <option value="Parent">Parent</option>
           </select>
         </div>
-        {error && <p style={styles.error}>{error}</p>}
+        {errors.length > 0 && (
+          <div style={styles.errorContainer}>
+            {errors.map((error, index) => (
+              <p key={index} style={styles.error}>{error}</p>
+            ))}
+          </div>
+        )}
         <button type="submit" style={styles.button}>Login</button>
       </form>
     </div>
@@ -131,10 +153,14 @@ const styles = {
     border: '1px solid #ccc',
     borderRadius: '4px',
   },
+  errorContainer: {
+    marginTop: '10px',
+  },
   error: {
     color: 'red',
     fontSize: '14px',
     textAlign: 'center',
+    margin: '5px 0',
   },
   button: {
     padding: '12px',
