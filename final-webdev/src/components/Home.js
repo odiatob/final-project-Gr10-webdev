@@ -48,12 +48,11 @@ const Home = () => {
         </p>
       </section>
 
-      {/* Enrollment Link Section */}
       <section style={styles.enrollmentLinkContainer}>
-        <Link to="/enroll" style={styles.enrollmentLink}>
-          Click here to inquire or enroll at De La Salle Lipa
-        </Link>
-      </section>
+  <Link to="/login" style={styles.enrollmentLink}>
+    Click here to inquire or enroll at De La Salle Lipa
+  </Link>
+</section>
     </div>
   );
 };

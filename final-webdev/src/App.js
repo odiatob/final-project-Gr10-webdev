@@ -1,11 +1,14 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Header from './components/Header';
+import TransactionValidation from './components/TransactionValidation'; // Import the TransactionValidation component
 import Home from './components/Home';
+import Header from './components/Header';
 import EnrollmentForm from './components/EnrollmentForm';
 import Footer from './components/Footer';
 import Login from './components/Login';
 import Admin from './components/Admin';
+import StudentDashboard from './components/StudentDashboard';
+import ParentDashboard from './components/ParentDashboard';
 
 const App = () => {
   return (
@@ -17,6 +20,9 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/enroll" element={<EnrollmentForm />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/student-dashboard" element={<StudentDashboard />} />
+          <Route path="/parent-dashboard" element={<ParentDashboard />} />
+          <Route path="/transaction-validation" element={<TransactionValidation />} /> {/* Added the route for TransactionValidation */}
         </Routes>
         <Footer />
       </div>

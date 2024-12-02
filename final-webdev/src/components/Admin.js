@@ -1,69 +1,70 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const Admin = () => {
-  // Sample student data for demonstration
-  const [students, setStudents] = useState([
-    { id: 1, name: 'John Doe', course: 'BS Computer Science', status: 'Pending' },
-    { id: 2, name: 'Jane Smith', course: 'BS Information Technology', status: 'Pending' },
-    { id: 3, name: 'Mark Johnson', course: 'BS Entertainment Multimedia Computing', status: 'Pending' },
-  ]);
+const Admin = ({ students, onApprove }) => {
+  const [approvedStudents, setApprovedStudents] = useState([]);
 
-  const handleAction = (id, action) => {
-    setStudents((prevStudents) =>
-      prevStudents.map((student) =>
-        student.id === id
-          ? {
-              ...student,
-              status: action === 'edit' ? student.status : action === 'approve' ? 'Approved' : 'Rejected',
-            }
-          : student
-      )
-    );
-  };
+  useEffect(() => {
+    // Load approved students from local storage or API if available
+    // For now, we're assuming `students` comes as a prop, which is an array of student objects
+    const approvedList = students.filter(student => student.isApproved);
+    setApprovedStudents(approvedList);
+  }, [students]);
 
-  const handleEdit = (id) => {
-    const newName = prompt('Enter new name:');
-    const newCourse = prompt('Enter new course:');
-    setStudents((prevStudents) =>
-      prevStudents.map((student) =>
-        student.id === id
-          ? { ...student, name: newName || student.name, course: newCourse || student.course }
-          : student
-      )
-    );
+  const handleApprove = (studentId) => {
+    // Update the approval status for the student (e.g., set `isApproved` to true)
+    onApprove(studentId);
   };
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.title}>Admin Dashboard</h1>
-      <p style={styles.description}>Manage student accounts below:</p>
-      <div style={styles.tableContainer}>
+      <h2 style={styles.title}>Admin Dashboard</h2>
+      
+      <div style={styles.studentList}>
+        <h3 style={styles.subtitle}>Pending Approvals</h3>
         <table style={styles.table}>
           <thead>
             <tr>
-              <th style={styles.th}>Name</th>
-              <th style={styles.th}>Course</th>
-              <th style={styles.th}>Status</th>
-              <th style={styles.th}>Actions</th>
+              <th>Name</th>
+              <th>Course</th>
+              <th>Email</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {students.map((student) => (
+            {students.filter(student => !student.isApproved).map((student) => (
               <tr key={student.id}>
-                <td style={styles.td}>{student.name}</td>
-                <td style={styles.td}>{student.course}</td>
-                <td style={styles.td}>{student.status}</td>
-                <td style={styles.td}>
-                  <button style={styles.button} onClick={() => handleAction(student.id, 'approve')}>
+                <td>{student.firstName} {student.lastName}</td>
+                <td>{student.course}</td>
+                <td>{student.email}</td>
+                <td>
+                  <button 
+                    onClick={() => handleApprove(student.id)} 
+                    style={styles.approveButton}>
                     Approve
                   </button>
-                  <button style={styles.button} onClick={() => handleAction(student.id, 'reject')}>
-                    Reject
-                  </button>
-                  <button style={styles.button} onClick={() => handleEdit(student.id)}>
-                    Edit
-                  </button>
                 </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div style={styles.approvedStudents}>
+        <h3 style={styles.subtitle}>Approved Students</h3>
+        <table style={styles.table}>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Course</th>
+              <th>Email</th>
+            </tr>
+          </thead>
+          <tbody>
+            {approvedStudents.map((student) => (
+              <tr key={student.id}>
+                <td>{student.firstName} {student.lastName}</td>
+                <td>{student.course}</td>
+                <td>{student.email}</td>
               </tr>
             ))}
           </tbody>
@@ -76,47 +77,47 @@ const Admin = () => {
 const styles = {
   container: {
     padding: '20px',
-    maxWidth: '800px',
-    margin: '50px auto',
-    border: '1px solid #ddd',
+    maxWidth: '900px',
+    margin: '0 auto',
+    backgroundColor: '#ffffff',
     borderRadius: '8px',
     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-    textAlign: 'center',
   },
   title: {
-    fontSize: '28px',
-    fontWeight: 'bold',
-    marginBottom: '20px',
-    color: '#4CAF50',
-  },
-  description: {
-    fontSize: '16px',
+    fontSize: '24px',
+    fontWeight: '600',
+    color: '#388E3C',
+    textAlign: 'center',
     marginBottom: '20px',
   },
-  tableContainer: {
-    overflowX: 'auto',
+  subtitle: {
+    fontSize: '20px',
+    fontWeight: '600',
+    marginBottom: '10px',
+    color: '#388E3C',
+  },
+  studentList: {
+    marginBottom: '30px',
+  },
+  approvedStudents: {
+    marginBottom: '30px',
   },
   table: {
     width: '100%',
     borderCollapse: 'collapse',
   },
-  th: {
-    padding: '10px',
-    backgroundColor: '#4CAF50',
-    color: '#fff',
-    border: '1px solid #ddd',
+  tableHead: {
+    backgroundColor: '#f1f1f1',
+    fontWeight: 'bold',
   },
-  td: {
+  tableCell: {
     padding: '10px',
-    border: '1px solid #ddd',
-    textAlign: 'center',
+    border: '1px solid #ccc',
   },
-  button: {
-    padding: '5px 10px',
-    margin: '0 5px',
-    fontSize: '14px',
-    backgroundColor: '#4CAF50',
-    color: '#fff',
+  approveButton: {
+    padding: '8px 16px',
+    backgroundColor: '#388E3C',
+    color: 'white',
     border: 'none',
     borderRadius: '4px',
     cursor: 'pointer',

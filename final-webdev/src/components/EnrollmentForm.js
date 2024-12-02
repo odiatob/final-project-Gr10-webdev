@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const EnrollmentForm = () => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    course: '', // Default to an empty string to ensure validation works
+    course: '',
     email: '',
-    paymentType: 'Gcash', // Default value
-    paymentAmount: '', // User input for payment amount
+    paymentType: 'Gcash',
+    paymentAmount: '',
   });
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,8 +24,9 @@ const EnrollmentForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Check if all fields are filled
     const { firstName, lastName, course, email, paymentAmount } = formData;
+
+    // Validate form fields
     if (!firstName || !lastName || !course || !email || !paymentAmount) {
       alert('All fields are required. Please complete the form.');
       return;
@@ -34,19 +38,20 @@ const EnrollmentForm = () => {
       return;
     }
 
-    // Check payment amount is valid (>= 7000)
+    // Validate payment amount
     if (Number(paymentAmount) < 7000) {
       alert('Payment amount must be at least 7000 pesos.');
       return;
     }
 
-    // Successful submission
+    // Open GCash in a new tab
+    window.open('https://www.gcash.com', '_blank');
+
+    // Redirect to TransactionValidation
     alert(
       `Enrollment submitted for ${firstName} ${lastName}, Course: ${course}, Payment Type: ${formData.paymentType}, Amount: ${paymentAmount}`
     );
-
-    // Redirect to GCash
-    window.open('https://gcash.com', '_blank');
+    navigate('/transaction-validation');  // Redirecting to TransactionValidation page
   };
 
   return (
@@ -77,7 +82,6 @@ const EnrollmentForm = () => {
           />
         </div>
 
-        {/* Updated Course Section as a Select */}
         <div style={styles.inputGroup}>
           <label style={styles.label} htmlFor="course">Course:</label>
           <select
@@ -106,7 +110,6 @@ const EnrollmentForm = () => {
           />
         </div>
 
-        {/* Select Section for Payment Type */}
         <div style={styles.inputGroup}>
           <label style={styles.label} htmlFor="paymentType">Type of Payment:</label>
           <select
@@ -120,7 +123,6 @@ const EnrollmentForm = () => {
           </select>
         </div>
 
-        {/* Input Section for Payment Amount */}
         <div style={styles.inputGroup}>
           <label style={styles.label} htmlFor="paymentAmount">Amount of Payment:</label>
           <input
