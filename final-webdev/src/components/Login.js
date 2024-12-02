@@ -68,7 +68,7 @@ const Login = () => {
 
 const styles = {
   container: {
-    padding: '20px',
+    padding: '50px',
     maxWidth: '400px',
     margin: '50px auto',
     border: '1px solid #ddd',

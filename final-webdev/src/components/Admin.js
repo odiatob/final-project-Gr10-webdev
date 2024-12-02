@@ -1,103 +1,74 @@
 import React, { useState } from 'react';
 
 const Admin = () => {
-  const [email, setEmail] = useState('');
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [error, setError] = useState('');
+  // Sample student data for demonstration
   const [students, setStudents] = useState([
-    { id: 1, name: 'John Doe', email: 'johndoe@dlsl.edu.ph', status: 'Pending' },
-    { id: 2, name: 'Jane Smith', email: 'janesmith@dlsl.edu.ph', status: 'Approved' },
+    { id: 1, name: 'John Doe', course: 'BS Computer Science', status: 'Pending' },
+    { id: 2, name: 'Jane Smith', course: 'BS Information Technology', status: 'Pending' },
+    { id: 3, name: 'Mark Johnson', course: 'BS Entertainment Multimedia Computing', status: 'Pending' },
   ]);
-  const [notifications, setNotifications] = useState([]);
-
-  const adminEmails = ['admin1@dlsl.edu.ph', 'admin2@dlsl.edu.ph', 'admin3@dlsl.edu.ph'];
-
-  const handleLogin = () => {
-    if (adminEmails.includes(email)) {
-      setIsAdmin(true);
-      setError('');
-    } else {
-      setError('Unauthorized access. Admin only.');
-      setIsAdmin(false);
-    }
-  };
 
   const handleAction = (id, action) => {
-    setStudents((prev) =>
-      prev.map((student) =>
+    setStudents((prevStudents) =>
+      prevStudents.map((student) =>
         student.id === id
-          ? { ...student, status: action === 'approve' ? 'Approved' : action === 'reject' ? 'Rejected' : 'Deleted' }
+          ? {
+              ...student,
+              status: action === 'edit' ? student.status : action === 'approve' ? 'Approved' : 'Rejected',
+            }
           : student
-      ).filter((student) => (action === 'delete' ? student.id !== id : true))
+      )
     );
   };
 
-  const addNotification = (message) => {
-    setNotifications([...notifications, message]);
+  const handleEdit = (id) => {
+    const newName = prompt('Enter new name:');
+    const newCourse = prompt('Enter new course:');
+    setStudents((prevStudents) =>
+      prevStudents.map((student) =>
+        student.id === id
+          ? { ...student, name: newName || student.name, course: newCourse || student.course }
+          : student
+      )
+    );
   };
 
   return (
     <div style={styles.container}>
-      {!isAdmin ? (
-        <div style={styles.login}>
-          <h2 style={styles.title}>Admin Login</h2>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter admin email"
-            style={styles.input}
-          />
-          <button onClick={handleLogin} style={styles.button}>Login</button>
-          {error && <p style={styles.error}>{error}</p>}
-        </div>
-      ) : (
-        <div>
-          <h2 style={styles.title}>Admin Dashboard</h2>
-          <h3>Manage Users</h3>
-          <table style={styles.table}>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Status</th>
-                <th>Actions</th>
+      <h1 style={styles.title}>Admin Dashboard</h1>
+      <p style={styles.description}>Manage student accounts below:</p>
+      <div style={styles.tableContainer}>
+        <table style={styles.table}>
+          <thead>
+            <tr>
+              <th style={styles.th}>Name</th>
+              <th style={styles.th}>Course</th>
+              <th style={styles.th}>Status</th>
+              <th style={styles.th}>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {students.map((student) => (
+              <tr key={student.id}>
+                <td style={styles.td}>{student.name}</td>
+                <td style={styles.td}>{student.course}</td>
+                <td style={styles.td}>{student.status}</td>
+                <td style={styles.td}>
+                  <button style={styles.button} onClick={() => handleAction(student.id, 'approve')}>
+                    Approve
+                  </button>
+                  <button style={styles.button} onClick={() => handleAction(student.id, 'reject')}>
+                    Reject
+                  </button>
+                  <button style={styles.button} onClick={() => handleEdit(student.id)}>
+                    Edit
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {students.map((student) => (
-                <tr key={student.id}>
-                  <td>{student.id}</td>
-                  <td>{student.name}</td>
-                  <td>{student.email}</td>
-                  <td>{student.status}</td>
-                  <td>
-                    <button onClick={() => handleAction(student.id, 'approve')} style={styles.actionButton}>Approve</button>
-                    <button onClick={() => handleAction(student.id, 'reject')} style={styles.actionButton}>Reject</button>
-                    <button onClick={() => handleAction(student.id, 'delete')} style={styles.actionButton}>Delete</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <h3>System Notifications</h3>
-          <div>
-            <textarea
-              rows="3"
-              placeholder="Write a notification..."
-              style={styles.textarea}
-              onBlur={(e) => addNotification(e.target.value)}
-            />
-            <ul style={styles.notifications}>
-              {notifications.map((notif, index) => (
-                <li key={index}>{notif}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      )}
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
@@ -105,61 +76,50 @@ const Admin = () => {
 const styles = {
   container: {
     padding: '20px',
-    fontFamily: 'Arial, sans-serif',
-  },
-  login: {
-    maxWidth: '400px',
-    margin: '0 auto',
+    maxWidth: '800px',
+    margin: '50px auto',
+    border: '1px solid #ddd',
+    borderRadius: '8px',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
     textAlign: 'center',
   },
   title: {
-    fontSize: '24px',
+    fontSize: '28px',
+    fontWeight: 'bold',
+    marginBottom: '20px',
+    color: '#4CAF50',
+  },
+  description: {
+    fontSize: '16px',
     marginBottom: '20px',
   },
-  input: {
-    width: '100%',
-    padding: '10px',
-    marginBottom: '10px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-  },
-  button: {
-    padding: '10px 20px',
-    backgroundColor: '#4CAF50',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-  },
-  error: {
-    color: 'red',
-    marginTop: '10px',
+  tableContainer: {
+    overflowX: 'auto',
   },
   table: {
     width: '100%',
     borderCollapse: 'collapse',
-    marginTop: '20px',
   },
-  actionButton: {
-    margin: '0 5px',
-    padding: '5px 10px',
-    border: 'none',
+  th: {
+    padding: '10px',
     backgroundColor: '#4CAF50',
     color: '#fff',
+    border: '1px solid #ddd',
+  },
+  td: {
+    padding: '10px',
+    border: '1px solid #ddd',
+    textAlign: 'center',
+  },
+  button: {
+    padding: '5px 10px',
+    margin: '0 5px',
+    fontSize: '14px',
+    backgroundColor: '#4CAF50',
+    color: '#fff',
+    border: 'none',
     borderRadius: '4px',
     cursor: 'pointer',
-  },
-  textarea: {
-    width: '100%',
-    marginTop: '10px',
-    padding: '10px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-  },
-  notifications: {
-    marginTop: '10px',
-    listStyleType: 'none',
-    padding: 0,
   },
 };
 
