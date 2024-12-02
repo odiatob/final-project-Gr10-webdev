@@ -19,12 +19,11 @@ const ParentDashboard = ({ parentEmail }) => {
   };
 
   const handleAddStudent = () => {
-    // Basic validation for input fields
     if (newStudent.name && newStudent.yearLevel && newStudent.program) {
       const nextId = students.length ? students[students.length - 1].id + 1 : 1;
       setStudents([...students, { id: nextId, ...newStudent, status: "Pending" }]);
       setNewStudent({ name: "", yearLevel: "", program: "" });
-      setErrorMessage("");  // Clear any error message
+      setErrorMessage("");
     } else {
       setErrorMessage("Please fill out all fields for the new student.");
     }
@@ -40,7 +39,7 @@ const ParentDashboard = ({ parentEmail }) => {
       } else {
         setStudents(filteredStudents);
         setStudentToRemove("");
-        setErrorMessage("");  // Clear error after successful removal
+        setErrorMessage("");
       }
     } else {
       setErrorMessage("Please enter a student's name to remove.");
@@ -48,21 +47,13 @@ const ParentDashboard = ({ parentEmail }) => {
   };
 
   const handleLogout = () => {
-    // Clear login information (this may involve clearing session storage, local storage, or context)
-    // For now, let's assume it's a simple redirect, and no actual session management is involved.
-    // You may want to clear any authentication tokens or local storage here if applicable.
-    navigate("/"); // Redirect to the homepage
+    navigate("/");
   };
 
   return (
     <div className="dashboard">
-      {/* Parent Email (Positioned on the left side) */}
-      <div style={styles.parentEmail}>Parent: {parentEmail}</div>
+      <h3>Student Lists</h3>
 
-      {/* Dashboard Content */}
-      <h3>Student Lists</h3>  {/* Updated Heading */}
-
-      {/* Error Message */}
       {errorMessage && <p style={styles.error}>{errorMessage}</p>}
 
       <table className="student-table">
@@ -125,27 +116,31 @@ const ParentDashboard = ({ parentEmail }) => {
           <button onClick={handleRemoveStudent}>Remove Student</button>
         </div>
 
-        {/* Removed the Logout Button under "Remove Student" */}
+        {/* Contact Administrator Link */}
+        <div>
+          <a href="https://example.com/contact" target="_blank" rel="noopener noreferrer" style={styles.link}>
+            Contact Administrator
+          </a>
+        </div>
       </div>
     </div>
   );
 };
 
 const styles = {
-  parentEmail: {
-    position: "absolute",  // Ensures the email stays fixed in place
-    top: "10px",          // Adjust as needed for positioning
-    left: "20px",         // Aligns it to the left side
-    fontSize: "16px",
-    fontWeight: "bold",
-    color: "#2e7d32", // Color for parent email
-  },
   error: {
     color: "red",
     fontSize: "14px",
     textAlign: "center",
     margin: "10px 0",
   },
+  link: {
+    color: "#007BFF", // Blue color for the link
+    textDecoration: "underline",
+    cursor: "pointer",
+    fontSize: "14px",
+    marginTop: "10px", // Optional: adds space between the button and the link
+  }
 };
 
 export default ParentDashboard;

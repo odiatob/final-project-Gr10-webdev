@@ -1,32 +1,35 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Header = ({ parentEmail, setParentEmail }) => {
+  const navigate = useNavigate();
+
   const handleLogout = () => {
     setParentEmail(null); // Clear the parent's email on logout
+    navigate('/'); // Redirect immediately to the home page
   };
 
   return (
     <header style={styles.header}>
       <h1 style={styles.title}>DLSL Enrollment System</h1>
       <nav style={styles.nav}>
-        <Link to="/home" style={styles.button}>Home</Link>
+        <Link to="/" style={styles.button}>Home</Link>
         <Link to="/students" style={styles.button}>List of Students</Link>
-
-        {/* Conditionally render Login or Logout */}
         <Link to="/login" style={styles.button}>Login</Link>
-
         {parentEmail && (
           <button onClick={handleLogout} style={styles.button}>Logout</button>
         )}
       </nav>
+      {parentEmail && (
+        <div style={styles.parentEmail}>Parent: {parentEmail}</div>
+      )}
     </header>
   );
 };
 
 const styles = {
   header: {
-    background: 'linear-gradient(135deg, #4CAF50, #388E3C)', // Gradient background
+    background: 'linear-gradient(135deg, #4CAF50, #388E3C)',
     color: 'white',
     padding: '15px 20px',
     textAlign: 'center',
@@ -35,7 +38,7 @@ const styles = {
   },
   title: {
     fontFamily: '"Montserrat", sans-serif',
-    fontSize: '28px',  // Reduced size for a simpler header
+    fontSize: '28px',
     fontWeight: '600',
     margin: '0',
   },
@@ -57,8 +60,11 @@ const styles = {
     transition: 'background-color 0.3s ease',
     cursor: 'pointer',
   },
-  buttonHover: {
-    backgroundColor: '#4CAF50', // Lighter green on hover
+  parentEmail: {
+    marginTop: '10px',
+    fontSize: '18px',
+    color: '#fff',
+    fontWeight: '500',
   },
 };
 
