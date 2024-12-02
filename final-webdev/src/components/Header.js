@@ -14,7 +14,6 @@ const Header = ({ parentEmail, setParentEmail }) => {
       <h1 style={styles.title}>DLSL Enrollment System</h1>
       <nav style={styles.nav}>
         <Link to="/" style={styles.button}>Home</Link>
-        <Link to="/students" style={styles.button}>List of Students</Link>
         <Link to="/login" style={styles.button}>Login</Link>
         {parentEmail && (
           <button onClick={handleLogout} style={styles.button}>Logout</button>

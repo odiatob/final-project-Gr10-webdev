@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { db } from './firebase';  // Import your Firebase instance
+import { collection, addDoc, getDocs } from 'firebase/firestore';
 
 const EnrollmentForm = () => {
   const [formData, setFormData] = useState({
@@ -7,11 +9,30 @@ const EnrollmentForm = () => {
     lastName: '',
     course: '',
     email: '',
+    parentEmail: '',  // New field for Parent/Guardian Email
     paymentType: 'Gcash',
     paymentAmount: '',
   });
 
+  const [emailExists, setEmailExists] = useState(false);  // State for checking if email exists
   const navigate = useNavigate();
+
+  // Function to check if the email already exists in Firestore
+  const checkEmailExists = async (email) => {
+    const querySnapshot = await getDocs(collection(db, "students"));
+    const existingEmails = querySnapshot.docs.map(doc => doc.data().email);
+    return existingEmails.includes(email);
+  };
+
+  useEffect(() => {
+    const validateEmail = async () => {
+      if (formData.email) {
+        const isEmailExists = await checkEmailExists(formData.email);
+        setEmailExists(isEmailExists);  // Update emailExists state based on result
+      }
+    };
+    validateEmail();
+  }, [formData.email]);  // Run this effect whenever the email changes
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,14 +42,21 @@ const EnrollmentForm = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { firstName, lastName, course, email, paymentAmount } = formData;
+    const { firstName, lastName, course, email, parentEmail, paymentAmount } = formData;
 
     // Validate form fields
     if (!firstName || !lastName || !course || !email || !paymentAmount) {
       alert('All fields are required. Please complete the form.');
+      return;
+    }
+
+    // Check if email already exists
+    if (emailExists) {
+      alert('This email is already registered. You have already submitted your enrollment. Redirecting to your dashboard...');
+      navigate('/student-dashboard');  // Redirect to student dashboard if email exists
       return;
     }
 
@@ -44,14 +72,31 @@ const EnrollmentForm = () => {
       return;
     }
 
-    // Open GCash in a new tab
+    if (Number(paymentAmount) > 50000) {
+      alert('Payment amount must be below 50000 pesos.');
+      return;
+    }
+  
     window.open('https://www.gcash.com', '_blank');
 
-    // Redirect to TransactionValidation
-    alert(
-      `Enrollment submitted for ${firstName} ${lastName}, Course: ${course}, Payment Type: ${formData.paymentType}, Amount: ${paymentAmount}`
-    );
-    navigate('/transaction-validation');  // Redirecting to TransactionValidation page
+    // Save data to Firestore with initial 'pending' status
+    try {
+      await addDoc(collection(db, 'students'), {
+        firstName,
+        lastName,
+        course,
+        email,
+        parentEmail,  // Store the parent's email in Firestore
+        paymentType: formData.paymentType,
+        paymentAmount,
+        status: 'pending',  // Set initial status as pending
+      });
+      alert(`Enrollment submitted for ${firstName} ${lastName}`);
+      navigate('/transaction-validation');  // Redirect to validation page
+    } catch (error) {
+      console.error('Error adding document: ', error);
+      alert('There was an error submitting your enrollment.');
+    }
   };
 
   return (
@@ -107,6 +152,20 @@ const EnrollmentForm = () => {
             value={formData.email}
             onChange={handleChange}
             style={styles.input}
+            required
+          />
+          {emailExists && <span style={styles.error}>This email is already registered.</span>}  {/* Error message */}
+        </div>
+
+        <div style={styles.inputGroup}>
+          <label style={styles.label} htmlFor="parentEmail">Parent/Guardian Email (Optional):</label>
+          <input
+            type="email"
+            id="parentEmail"
+            name="parentEmail"
+            value={formData.parentEmail}
+            onChange={handleChange}
+            style={styles.input}
           />
         </div>
 
@@ -133,6 +192,7 @@ const EnrollmentForm = () => {
             onChange={handleChange}
             style={styles.input}
             placeholder="Enter amount (minimum 7000)"
+            required
           />
         </div>
 
@@ -192,6 +252,11 @@ const styles = {
     border: 'none',
     borderRadius: '4px',
     cursor: 'pointer',
+  },
+  error: {
+    color: 'red',
+    fontSize: '14px',
+    marginTop: '5px',
   },
 };
 

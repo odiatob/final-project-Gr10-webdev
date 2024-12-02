@@ -8,7 +8,6 @@ import Footer from './components/Footer';
 import Login from './components/Login';
 import Admin from './components/Admin';
 import StudentDashboard from './components/StudentDashboard';
-import ParentDashboard from './components/ParentDashboard';
 
 const App = () => {
   return (
@@ -21,7 +20,6 @@ const App = () => {
           <Route path="/enroll" element={<EnrollmentForm />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/student-dashboard" element={<StudentDashboard />} />
-          <Route path="/parent-dashboard" element={<ParentDashboard />} />
           <Route path="/transaction-validation" element={<TransactionValidation />} /> {/* Added the route for TransactionValidation */}
         </Routes>
         <Footer />
