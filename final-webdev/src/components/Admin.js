@@ -39,18 +39,6 @@ const AdminDashboard = () => {
     setStudents(students.filter(student => student.id !== studentId));
   };
 
-  // Edit Student (Example for editing paymentAmount)
-  const editStudent = async (studentId, updatedData) => {
-    const studentRef = doc(db, "students", studentId);
-    await updateDoc(studentRef, updatedData);
-    alert('Student data updated!');
-    // Re-fetch or update the specific student data in the state
-    const updatedStudents = students.map(student =>
-      student.id === studentId ? { ...student, ...updatedData } : student
-    );
-    setStudents(updatedStudents);
-  };
-
   return (
     <div>
       <h2>Admin Dashboard</h2>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db } from './firebase';  // Import your Firebase instance
-import { collection, addDoc, getDocs } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 
 const EnrollmentForm = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +15,7 @@ const EnrollmentForm = () => {
   });
 
   const [emailExists, setEmailExists] = useState(false);  // State for checking if email exists
+  const [parentEmailRegistered, setParentEmailRegistered] = useState(false);  // State to check if parent email is associated with a student
   const navigate = useNavigate();
 
   // Function to check if the email already exists in Firestore
@@ -22,6 +23,13 @@ const EnrollmentForm = () => {
     const querySnapshot = await getDocs(collection(db, "students"));
     const existingEmails = querySnapshot.docs.map(doc => doc.data().email);
     return existingEmails.includes(email);
+  };
+
+  // Function to check if parent email is already associated with a student
+  const checkParentEmailExists = async (parentEmail) => {
+    const q = query(collection(db, 'students'), where('parentEmail', '==', parentEmail));
+    const querySnapshot = await getDocs(q);
+    return !querySnapshot.empty;
   };
 
   useEffect(() => {
@@ -33,6 +41,16 @@ const EnrollmentForm = () => {
     };
     validateEmail();
   }, [formData.email]);  // Run this effect whenever the email changes
+
+  useEffect(() => {
+    const validateParentEmail = async () => {
+      if (formData.parentEmail) {
+        const isParentEmailRegistered = await checkParentEmailExists(formData.parentEmail);
+        setParentEmailRegistered(isParentEmailRegistered);  // Update parentEmailRegistered state based on result
+      }
+    };
+    validateParentEmail();
+  }, [formData.parentEmail]);  // Run this effect whenever the parent email changes
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -76,7 +94,7 @@ const EnrollmentForm = () => {
       alert('Payment amount must be below 50000 pesos.');
       return;
     }
-  
+
     window.open('https://www.gcash.com', '_blank');
 
     // Save data to Firestore with initial 'pending' status
@@ -167,6 +185,9 @@ const EnrollmentForm = () => {
             onChange={handleChange}
             style={styles.input}
           />
+          {parentEmailRegistered && (
+            <p style={styles.infoText}>This parent email is already associated with a student.</p>
+          )}
         </div>
 
         <div style={styles.inputGroup}>
@@ -255,6 +276,11 @@ const styles = {
   },
   error: {
     color: 'red',
+    fontSize: '14px',
+    marginTop: '5px',
+  },
+  infoText: {
+    color: 'blue',
     fontSize: '14px',
     marginTop: '5px',
   },

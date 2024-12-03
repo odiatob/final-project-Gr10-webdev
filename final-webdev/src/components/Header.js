@@ -1,23 +1,15 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-const Header = ({ parentEmail, setParentEmail }) => {
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    setParentEmail(null); // Clear the parent's email on logout
-    navigate('/'); // Redirect immediately to the home page
-  };
-
+const Header = ({ parentEmail }) => {
   return (
     <header style={styles.header}>
       <h1 style={styles.title}>DLSL Enrollment System</h1>
       <nav style={styles.nav}>
-        <Link to="/" style={styles.button}>Home</Link>
-        <Link to="/login" style={styles.button}>Login</Link>
-        {parentEmail && (
-          <button onClick={handleLogout} style={styles.button}>Logout</button>
-        )}
+        <Link to="/" style={styles.link}>Home</Link>
+        <Link to="/login" style={styles.link}>Login</Link>
+        <Link to="/parents-login" style={styles.link}>Parents</Link> 
+        <Link to="/register" style={styles.link}>Register</Link> 
       </nav>
       {parentEmail && (
         <div style={styles.parentEmail}>Parent: {parentEmail}</div>
@@ -47,7 +39,7 @@ const styles = {
     justifyContent: 'center',
     gap: '15px',
   },
-  button: {
+  link: {
     textDecoration: 'none',
     fontSize: '16px',
     color: 'white',
