@@ -1,50 +1,29 @@
-// src/components/ParentsLogin.js
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { signInWithEmailAndPassword } from 'firebase/auth'; // Removed unused imports
-import { db, auth } from '../firebaseConfig'; // Import only the necessary instances
 import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '../firebaseConfig'; // Import only db
 
 const ParentsLogin = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [parentEmails, setParentEmails] = useState([]);
+  const [parentEmail, setParentEmail] = useState('');
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const getParentEmails = async () => {
-      const studentsRef = collection(db, 'students');
-      const q = query(studentsRef, where("parentEmail", "!=", ""));
-      const querySnapshot = await getDocs(q);
-
-      const emails = [];
-      querySnapshot.forEach((doc) => {
-        const studentData = doc.data();
-        if (studentData.parentEmail) {
-          emails.push(studentData.parentEmail);
-        }
-      });
-      setParentEmails(emails); // Store the emails in state
-    };
-
-    getParentEmails();
-  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    if (!parentEmails.includes(email)) {
-      alert('Unauthorized parent email.');
-      return;
-    }
-
     try {
-      // Attempt to log the parent in
-      await signInWithEmailAndPassword(auth, email, password);
+      // Check if the parent email exists in the 'students' collection
+      const studentsRef = collection(db, 'students');
+      const q = query(studentsRef, where('parentEmail', '==', parentEmail));
+      const querySnapshot = await getDocs(q);
 
-      // Successful login, redirect to Parent Dashboard
-      alert('Login successful. Redirecting to Parent Dashboard.');
-      navigate('/parent-dashboard'); // Adjust this route as needed
+      if (querySnapshot.empty) {
+        alert('Parent email not associated with any student or not found.');
+        return;
+      }
+
+      // Proceed to the student dashboard if parent email exists in the collection
+      alert('Login successful. Redirecting to Student Dashboard.');
+      navigate('/student-dashboard');
     } catch (error) {
       alert('Login failed: ' + error.message);
     }
@@ -55,26 +34,14 @@ const ParentsLogin = () => {
       <h2 style={styles.title}>Parent Login</h2>
       <form onSubmit={handleLogin} style={styles.form}>
         <div style={styles.inputGroup}>
-          <label htmlFor="email" style={styles.label}>Email:</label>
+          <label htmlFor="parentEmail" style={styles.label}>Parent Email:</label>
           <input
             type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            id="parentEmail"
+            value={parentEmail}
+            onChange={(e) => setParentEmail(e.target.value)}
             style={styles.input}
-            placeholder="Enter your email"
-            required
-          />
-        </div>
-        <div style={styles.inputGroup}>
-          <label htmlFor="password" style={styles.label}>Password:</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={styles.input}
-            placeholder="Enter your password"
+            placeholder="Enter your registered parent email"
             required
           />
         </div>
