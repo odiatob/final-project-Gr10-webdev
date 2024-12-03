@@ -1,9 +1,9 @@
 // src/components/ParentsLogin.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
-import { db, auth } from '../firebaseConfig'; // Import db and auth from firebaseConfig
+import { signInWithEmailAndPassword } from 'firebase/auth'; // Removed unused imports
+import { db, auth } from '../firebaseConfig'; // Import only the necessary instances
+import { collection, query, where, getDocs } from 'firebase/firestore';
 
 const ParentsLogin = () => {
   const [email, setEmail] = useState('');
@@ -12,7 +12,6 @@ const ParentsLogin = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch all parent emails from Firestore (students collection)
     const getParentEmails = async () => {
       const studentsRef = collection(db, 'students');
       const q = query(studentsRef, where("parentEmail", "!=", ""));
@@ -34,7 +33,6 @@ const ParentsLogin = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Check if the entered email matches any registered parent email
     if (!parentEmails.includes(email)) {
       alert('Unauthorized parent email.');
       return;
@@ -42,11 +40,11 @@ const ParentsLogin = () => {
 
     try {
       // Attempt to log the parent in
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmailAndPassword(auth, email, password);
 
       // Successful login, redirect to Parent Dashboard
       alert('Login successful. Redirecting to Parent Dashboard.');
-      navigate('/parent-dashboard'); // Redirect to the parent dashboard page (adjust as needed)
+      navigate('/parent-dashboard'); // Adjust this route as needed
     } catch (error) {
       alert('Login failed: ' + error.message);
     }

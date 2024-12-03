@@ -1,25 +1,24 @@
 // src/firebaseConfig.js
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { initializeApp, getApps, getApp } from 'firebase/app'; // Import getApps and getApp
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 
+// Firebase configuration object
 const firebaseConfig = {
-apiKey: "AIzaSyAMTIZ7rPP-j81d2At2O0iPUh2yu-5YPao",
-authDomain: "final-webdev.firebaseapp.com",
-projectId: "final-webdev",
-storageBucket: "final-webdev.firebasestorage.app",
-messagingSenderId: "980449241259",
-appId: "1:980449241259:web:b963d26e0160bc047f2fee",
+  apiKey: 'your-api-key',
+  authDomain: 'your-auth-domain',
+  projectId: 'your-project-id',
+  storageBucket: 'your-storage-bucket',
+  messagingSenderId: 'your-messaging-sender-id',
+  appId: 'your-app-id',
+  measurementId: 'your-measurement-id',
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase (only if not initialized already)
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp(); // Ensure Firebase is initialized only once
 
-// Initialize Firestore and Auth
-const db = getFirestore(app);
+// Export Firebase services
 const auth = getAuth(app);
+const db = getFirestore(app);
 
-// Export the initialized Firestore and Auth instances
-export { db, auth };
-
-
+export { auth, db };
